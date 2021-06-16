@@ -113,6 +113,7 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
 ### 秋月電子通商で買うもの
 
 - とりあえず買うもの
+  - [Micro USB ケーブル](https://akizukidenshi.com/catalog/g/gC-09314/) 1個
   - [レッドボード](https://akizukidenshi.com/catalog/g/gP-00315/) 1個
   - [ジャンパーワイヤー](https://akizukidenshi.com/catalog/g/gC-05371/) 1セット
   - [ジョイスティック](https://akizukidenshi.com/catalog/g/gK-15233/) 1個
