@@ -173,6 +173,9 @@ ArduinoIDE をインストールし、ESP32 用にセットアップします。
 
 ### Web Server 構築
 
+簡単なAPIサーバとRRD-Toolsで表示。
+[MQTT,Grafana](https://dzone.com/articles/playing-with-docker-mqtt-grafana-influxdb-python-a)
+
 ### HTTP GET
 
 ### HTTPS PUSH
