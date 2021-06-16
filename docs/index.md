@@ -106,14 +106,10 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
   - [HiLetgo ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetoothデュアルモード](https://www.amazon.co.jp/dp/B0718T232Z?tag=langship-22&linkCode=ogi&th=1&psc=1)
 
 
-- MicroUSBケーブル（持ってない人は買って下さい）
-  - [Amazonベーシック USBケーブル 0.9m (2.0タイプAオス - マイクロBケーブル)](https://www.amazon.co.jp/Amazon%E3%83%99%E3%83%BC%E3%82%B7%E3%83%83%E3%82%AF-USB2-0-%E3%82%AA%E3%82%B9-%E3%83%9E%E3%82%A4%E3%82%AF%E3%83%ADB%E3%82%B1%E3%83%BC%E3%83%96%E3%83%AB-0-9m/dp/B0711PVX6Z/ref=pd_di_pb_ps_3/355-5067336-4286643?pd_rd_w=thgER&pf_rd_p=803b807c-2ef3-4ccc-8cff-f22e3435ab5d&pf_rd_r=9V8YKN7X4SG3XPGQE5Q9&pd_rd_r=97c7410f-a38b-4c77-b66e-19cbb74f4cdf&pd_rd_wg=XBNau&pd_rd_i=B0711PVX6Z&psc=1)
-
-
 ### 秋月電子通商で買うもの
 
 - とりあえず買うもの
-  - [Micro USB ケーブル](https://akizukidenshi.com/catalog/g/gC-09314/) 1個
+  - [普通の Micro USB ケーブル](https://akizukidenshi.com/catalog/g/gC-09314/) 1個
   - [レッドボード](https://akizukidenshi.com/catalog/g/gP-00315/) 1個
   - [ジャンパーワイヤー](https://akizukidenshi.com/catalog/g/gC-05371/) 1セット
   - [ジョイスティック](https://akizukidenshi.com/catalog/g/gK-15233/) 1個
