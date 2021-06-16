@@ -100,27 +100,29 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
 
 ## ESP32 と必要機器の購入
 
+一通り買います。全部買うと8000円くらいです。
+
 ### Amazon で買うもの
 
-- ESP32 Dev Kit 本体（とりあえず2個買って下さい）
+- ESP32 Dev Kit 本体（1個1100円です。2個以上買うのをオススメします）
   - [HiLetgo ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetoothデュアルモード](https://www.amazon.co.jp/dp/B0718T232Z?tag=langship-22&linkCode=ogi&th=1&psc=1)
 
 
 ### 秋月電子通商で買うもの
 
-- とりあえず買うもの
+- とりあえず買うもの（1,200円ぐらい）
   - [普通の Micro USB ケーブル](https://akizukidenshi.com/catalog/g/gC-09314/) 1個
-  - [レッドボード](https://akizukidenshi.com/catalog/g/gP-00315/) 1個
+  - [ブレッドボード](https://akizukidenshi.com/catalog/g/gP-00315/) 1個
   - [ジャンパーワイヤー](https://akizukidenshi.com/catalog/g/gC-05371/) 1セット
   - [ジョイスティック](https://akizukidenshi.com/catalog/g/gK-15233/) 1個
   - [白色LED 5mm](https://akizukidenshi.com/catalog/g/gI-02024/) 1セット
     - [カーボン抵抗 １／６Ｗ３３０Ω（１００本入）](https://akizukidenshi.com/catalog/g/gR-16331/) 1セット
 
-- お好みで買うもの
-  - [サーボモーター](https://akizukidenshi.com/catalog/g/gM-08914/) 1個
-  - [有機ELディスプレイ](https://akizukidenshi.com/catalog/g/gP-12031/) 1個
-  - [温湿度気圧センサー](https://akizukidenshi.com/catalog/g/gK-09421/) 1個
-  - [CO2センサーモジュール](https://akizukidenshi.com/catalog/g/gM-16142/) 1個
+- お好みで買うもの（4,500円ぐらい）
+  - [サーボモーター](https://akizukidenshi.com/catalog/g/gM-08914/) 1個 500円
+  - [有機ELディスプレイ](https://akizukidenshi.com/catalog/g/gP-12031/) 1個 600円
+  - [温湿度気圧センサー](https://akizukidenshi.com/catalog/g/gK-09421/) 1個 1,000円
+  - [CO2センサーモジュール](https://akizukidenshi.com/catalog/g/gM-16142/) 1個 2,500円
 
 ## ESP32 の開発環境
 
