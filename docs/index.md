@@ -8,7 +8,9 @@
 
 ## ESP32 とは
 
-Espress
+ESP32 は、上海に拠点を置く[Espressif Systems](https://www.espressif.com/) が開発するマイクロコントローラーのシリーズ名です。Wi-Fi と Bluetooth を内蔵しており、Windows、Linux、Mac で開発することができます。低価格ながら、[多くの種類のインタフェース](https://ja.wikipedia.org/wiki/ESP32) をサポートしています。
+
+
 
 ## ESP32 でできること
 
