@@ -32,7 +32,7 @@ ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressi
   - アナログ信号入出力
     - センサー値の読み取り
 
-  - GPIO、UART、SPI、I2C、CAM Bus による周辺機器との相互通信
+  - GPIO、UART、SPI、I2C、CAN Bus による周辺機器との相互通信
     - 様々な周辺機器との相互通信
 
   - PWM、I2S、DAC による信号出力
