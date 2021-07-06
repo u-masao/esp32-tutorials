@@ -9,6 +9,8 @@
 ### ESP32 とは
 
 ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressif.com/) が開発するマイクロコントローラーのシリーズ名です。Wi-Fi と Bluetooth を内蔵しており、Windows、Linux、Mac で開発することができます。500円～700円程度と低価格ながら、[多くの種類のインタフェース](https://ja.wikipedia.org/wiki/ESP32) をサポートしています。開発キットを利用することで、PC や Mac からマイクロ USB ケーブルで接続し、C 言語、MicroPython、JavaScript、lua、mruby でプログラミングすることができます。日本国内では、技適マークが無い ESP32 で電波を発射すると電波法違反の罪に問われます。必ず、技適マークがある機器を購入してください。
+<img src="https://images-na.ssl-images-amazon.com/images/I/51ZcOB41f%2BL._AC_.jpg" />
+
 
 ### ESP32 でできること
 
@@ -116,7 +118,7 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
   - [ジャンパーワイヤー](https://akizukidenshi.com/catalog/g/gC-05371/) 1セット
   - [ジョイスティック](https://akizukidenshi.com/catalog/g/gK-15233/) 1個
   - [白色LED 5mm](https://akizukidenshi.com/catalog/g/gI-02024/) 1セット
-    - [カーボン抵抗 １／６Ｗ３３０Ω（１００本入）](https://akizukidenshi.com/catalog/g/gR-16331/) 1セット
+  - [カーボン抵抗 １／６Ｗ３３０Ω（１００本入）](https://akizukidenshi.com/catalog/g/gR-16331/) 1セット
 
 - お好みで買うもの（4,500円ぐらい）
   - [サーボモーター](https://akizukidenshi.com/catalog/g/gM-08914/) 1個 500円
