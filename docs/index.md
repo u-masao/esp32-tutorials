@@ -357,6 +357,7 @@ LED と抵抗を直列に接続し、ESP32 の GPIO ピンに接続します。�
 ### Web Server 構築
 
 簡単なAPIサーバとRRD-Toolsで表示。
+Arduino IDE のライブラリマネージャーで PubSubClient をインストールします。
 [MQTT,Grafana](https://dzone.com/articles/playing-with-docker-mqtt-grafana-influxdb-python-a)
 
 ### HTTP GET
