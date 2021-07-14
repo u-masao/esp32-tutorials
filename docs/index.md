@@ -110,6 +110,9 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
 - ESP32 Dev Kit 本体（1個1,100円です。2個以上買うのをオススメします）
   - [HiLetgo ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetoothデュアルモード](https://www.amazon.co.jp/dp/B0718T232Z?tag=langship-22&linkCode=ogi&th=1&psc=1)
 
+<img src="https://esphome.io/_images/nodemcu_esp32-full.jpg" alt="NodeMCU-32S ピンアサイン" width="50%" height="50%" />
+
+
 
 #### 秋月電子通商で買うもの
 
@@ -133,7 +136,9 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
 
 #### Arduino-IDE
 
-Arduino 向けの IDE ですが、ESP32 用のモジュールをインストールすることで、ESP32 の開発環境になります。単純なプログラムを作る場合は、Arduino-IDE で十分なことが多いです。
+[Arduino IDE](https://www.arduino.cc/en/software)
+
+Arduino というマイコン向けの IDE です。ESP32 用のモジュールをインストールすることで、ESP32 の開発環境になります。単純なプログラムを作る場合は、Arduino-IDE で十分なことが多いです。
 
 #### その他
 
@@ -144,15 +149,188 @@ Windows の WSL2 は、シリアルポートに対応していないため書き
 
 ## 開発環境の構築
 
-ArduinoIDE をインストールし、ESP32 用にセットアップします。[こちら](https://www.indoorcorgielec.com/resources/arduinoide%E8%A8%AD%E5%AE%9A/esp-wroom-32%E6%90%AD%E8%BC%89%E8%A3%BD%E5%93%81/)のサイトを参考にしてください。
+
+### 開発環境のインストール
+
+Arduino IDE をインストールし、ESP32 用にセットアップします。
+[こちら](https://www.indoorcorgielec.com/resources/arduinoide%E8%A8%AD%E5%AE%9A/esp-wroom-32%E6%90%AD%E8%BC%89%E8%A3%BD%E5%93%81/)のサイトを参考にしてください。
+
+- 手順概要
+
+  1. Arduino IDE をダウンロードする
+  2. Arduino IDE をインストールする
+  3. 追加のボードマネージャに ESP32 を設定
+
+
+### 開発環境の設定
+
+1. USB ケーブルで ESP32 Dev Kit を PC に接続します（USB HUB を経由せず、直接 PC に接続してください）
+2. デバイスマネージャを開き、「ポート（COMとLPT）」で「Silicon Labs CP210x USB to UART Bridge(COM*)」のポート番号「COM*」を確認します
+3. Arduino IDE を起動します
+4. メニューの「ツール」→「ボード：・・・・」→「ESP32 Arduino」→「NodeMCU-32S」を選びます
+5. メニューの「ツール」→「シリアルポート」でポート番号「COM*」を選びます
+
 
 ## 動作確認
 
-### LED 点滅
+オンボード LED を点滅させます。
 
-### シリアル出力
+### 必要機器
+
+- ESP32 Dev Kit 1個
+- マイクロ USB ケーブル 1本
+
+オンボード LED は、ESP32 の GPIO 2 に接続されています。
+以下の操作で、GPIO 2 に接続されたオンボード LED を 2 秒周期で点滅させます。
+
+1. Arduion IDE を起動します
+2. メニューの「ファイル」→「スケッチ例」→「01.Bacis」→「Blink」を選択します
+3. 以下の通り編集します
+
+```c:
+#define LED_BUILTIN 2     /* この行を追加 */
+
+// the setup function runs once when you press reset or power the board
+void setup() {
+  // initialize digital pin LED_BUILTIN as an output.
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+  delay(1000);                       // wait for a second
+  digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+  delay(1000);                       // wait for a second
+}
+```
+4. メニューの「スケッチ」→「マイコンボードに書き込む」を選択
+5. 上手く行くとこんな表示が出ます
+
+```
+最大1310720バイトのフラッシュメモリのうち、スケッチが207705バイト（15%）を使っています。
+最大327680バイトのRAMのうち、グローバル変数が15228バイト（4%）を使っていて、ローカル変数で312452バイト使うことができます。
+esptool.py v2.6
+Serial port COM4
+Connecting.....
+Chip is ESP32D0WDQ6 (revision 1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+MAC: 84:cc:a8:7a:6e:74
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 921600
+Changed.
+Configuring flash size...
+Auto-detected Flash size: 4MB
+Compressed 8192 bytes to 47...
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.0 seconds (effective 4096.1 kbit/s)...
+Hash of data verified.
+Compressed 15856 bytes to 10276...
+Wrote 15856 bytes (10276 compressed) at 0x00001000 in 0.1 seconds (effective 998.8 kbit/s)...
+Hash of data verified.
+Compressed 207824 bytes to 105395...
+Wrote 207824 bytes (105395 compressed) at 0x00010000 in 1.5 seconds (effective 1109.9 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 128...
+Wrote 3072 bytes (128 compressed) at 0x00008000 in 0.0 seconds (effective 1365.3 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+```
+
+6. ESP32 Dev Kit のオンボードLEDが青く点滅するのを確認
+
+
+### シリアル出力（デバッグ）
+
+シリアル出力機能を使うと、デバッグが行えます。
+
+
+1. Arduion IDE を起動します
+2. メニューの「ファイル」→「新規ファイル」を選択します
+3. 以下の通り編集します
+
+```
+#define LED_BUILTIN 2
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("setup pin");
+  pinMode(LED_BUILTIN, OUTPUT);
+}
+
+void loop() {
+  Serial.println("LED on");
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(1000);                    
+  Serial.println("LED off");
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+}
+```
+4. メニューの「ファイル」→「保存」を選択し、適当な名前で保存します
+5 メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+6. 上手く行くとこんな表示が出ます
+
+```
+最大1310720バイトのフラッシュメモリのうち、スケッチが213249バイト（16%）を使っています。
+最大327680バイトのRAMのうち、グローバル変数が15372バイト（4%）を使っていて、ローカル変数で312308バイト使うことができます。
+esptool.py v2.6
+Serial port COM4
+Connecting....
+Chip is ESP32D0WDQ6 (revision 1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+MAC: 84:cc:a8:7a:6e:74
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 921600
+Changed.
+Configuring flash size...
+Auto-detected Flash size: 4MB
+Compressed 8192 bytes to 47...
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.0 seconds (effective 6553.6 kbit/s)...
+Hash of data verified.
+Compressed 15856 bytes to 10276...
+Wrote 15856 bytes (10276 compressed) at 0x00001000 in 0.1 seconds (effective 1112.7 kbit/s)...
+Hash of data verified.
+Compressed 213360 bytes to 108767...
+Wrote 213360 bytes (108767 compressed) at 0x00010000 in 1.6 seconds (effective 1087.2 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 128...
+Wrote 3072 bytes (128 compressed) at 0x00008000 in 0.0 seconds (effective 2048.0 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+```
+
+7. ESP32 Dev Kit のオンボードLEDが青く点滅するのを確認
+8. メニューの「ツール」→「シリアルモニタ」を選択
+9. シリアルモニタの右下で「115200 bps」を選択
+10. ESP32 のリセットボタンを押す
+11. 以下の表示を確認
+```
+LED off
+LED on
+LED off
+LED on
+LED off
+LED on
+LED off
+LED on
+LED off
+LED on
+```
+
 
 ## 出力編
+
+### LED
+
+LED と抵抗を直列に接続し、ESP32 の GPIO ピンに接続します。抵抗は、LED や GPIO ピンに流れる電流を制御するために利用します。
 
 ### 有機ELディスプレイ
 
