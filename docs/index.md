@@ -186,7 +186,6 @@ Arduino IDE をインストールし、ESP32 用にセットアップします�
 1. Arduion IDE を起動します
 2. メニューの「ファイル」→「スケッチ例」→「01.Bacis」→「Blink」を選択します
 3. 以下の通り編集します
-
 ```c:
 #define LED_BUILTIN 2     /* この行を追加 */
 
