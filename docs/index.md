@@ -136,7 +136,6 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
 
 #### Arduino-IDE
 
-[Arduino IDE](https://www.arduino.cc/en/software)
 
 Arduino というマイコン向けの IDE です。ESP32 用のモジュールをインストールすることで、ESP32 の開発環境になります。単純なプログラムを作る場合は、Arduino-IDE で十分なことが多いです。
 
@@ -149,26 +148,26 @@ Windows の WSL2 は、シリアルポートに対応していないため書き
 
 ## 開発環境の構築
 
-
-### 開発環境のインストール
-
+Windows 10 での環境構築方法を書きます。
 Arduino IDE をインストールし、ESP32 用にセットアップします。
-[こちら](https://www.indoorcorgielec.com/resources/arduinoide%E8%A8%AD%E5%AE%9A/esp-wroom-32%E6%90%AD%E8%BC%89%E8%A3%BD%E5%93%81/)のサイトを参考にしてください。
 
-- 手順概要
-
-  1. Arduino IDE をダウンロードする
-  2. Arduino IDE をインストールする
-  3. 追加のボードマネージャに ESP32 を設定
-
-
-### 開発環境の設定
-
-1. USB ケーブルで ESP32 Dev Kit を PC に接続します（USB HUB を経由せず、直接 PC に接続してください）
-2. デバイスマネージャを開き、「ポート（COMとLPT）」で「Silicon Labs CP210x USB to UART Bridge(COM*)」のポート番号「COM*」を確認します
+1. [Arduino IDE](https://www.arduino.cc/en/software) をダウンロードします
+2. Arduino IDE をインストールします
 3. Arduino IDE を起動します
-4. メニューの「ツール」→「ボード：・・・・」→「ESP32 Arduino」→「NodeMCU-32S」を選びます
-5. メニューの「ツール」→「シリアルポート」でポート番号「COM*」を選びます
+4. メニューの「ファイル」→「環境設定」を選択します
+5. 「環境設定」ダイアログボックスの「追加のボードマネージャのURL」に以下を入力します
+
+    https://dl.espressif.com/dl/package_esp32_index.json
+
+6. 「行番号を表示する」をチェックします
+7. 「OK」をクリックします
+8. マイクロ USB ケーブルで ESP32 Dev Kit を PC に接続します（USB HUB を経由せず、直接 PC に接続してください）
+9. デバイスマネージャを開き、「ポート（COMとLPT）」で「Silicon Labs CP210x USB to UART Bridge(COM*)」のポート番号「COM*」を確認します
+10. Arduino IDE を起動します
+11. メニューの「ツール」→「ボード：・・・・」→「ESP32 Arduino」→「NodeMCU-32S」を選びます（※※※ここ重要です）
+12. メニューの「ツール」→「シリアルポート」でポート番号「COM*」を選びます
+
+[参考サイト](https://www.indoorcorgielec.com/resources/arduinoide%E8%A8%AD%E5%AE%9A/esp-wroom-32%E6%90%AD%E8%BC%89%E8%A3%BD%E5%93%81/)
 
 
 ## 動作確認
@@ -180,7 +179,7 @@ Arduino IDE をインストールし、ESP32 用にセットアップします�
 - ESP32 Dev Kit 1個
 - マイクロ USB ケーブル 1本
 
-オンボード LED は、ESP32 の GPIO 2 に接続されています。
+オンボード LED は、ESP32 の GPIO2 に接続されています。
 以下の操作で、GPIO 2 に接続されたオンボード LED を 2 秒周期で点滅させます。
 
 ### オンボード LED の点滅
@@ -341,6 +340,18 @@ LED と抵抗を直列に接続し、ESP32 の GPIO ピンに接続します。�
 
 ### サーボモーター
 
+#### ハードウェア
+
+以下の通り接続します。
+
+| サーボモーター | ESP32 Dev Kit |
+---|---
+| 茶コード | GND ピン |
+| 橙コード | GPIO23 ピン |
+| 黄コード | 5V ピン |
+
+#### ソフトウェア
+
 - メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
 - 「ライブラリマネージャ」ダイアログボックスの検索欄に「ESP32Servo」と入力します
 - 「ESP32Servo」ライブラリを選択し、「インストール」ボタンをクリックします
@@ -398,8 +409,6 @@ void loop() {
 
 ## HTTP 通信
 
-### WiFi 接続設定
-
 ### Web Server 構築
 
 簡単なAPIサーバとRRD-Toolsで表示。
@@ -407,6 +416,58 @@ Arduino IDE のライブラリマネージャーで PubSubClient をインスト
 [MQTT,Grafana](https://dzone.com/articles/playing-with-docker-mqtt-grafana-influxdb-python-a)
 
 ### HTTP GET
+
+- Arduion IDE を起動します
+- メニューの「ファイル」→「スケッチ例」→「HttpClient」→「BasicHttpClient」を選択します
+- 以下の通り編集します（1行目と2行目は、ご利用のWiFiに接続する情報に修正してください）
+
+```c:
+#define WIFI_SSID "your_wifi_ssid"
+#define WIFI_SECRET "your_wifi_secret"
+#define USE_SERIAL Serial
+
+#include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiMulti.h>
+#include <HTTPClient.h>
+
+WiFiMulti wifiMulti;
+
+void setup() {
+    USE_SERIAL.begin(115200);
+    wifiMulti.addAP(WIFI_SSID, WIFI_SECRET);
+}
+
+void loop() {
+    if((wifiMulti.run() == WL_CONNECTED)) {
+
+        String url = "http://example.com/";
+        HTTPClient http;
+
+        http.begin(url);
+        int httpCode = http.GET();
+        if(httpCode > 0) {
+            USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+            if(httpCode == HTTP_CODE_OK) {
+                String payload = http.getString();
+                USE_SERIAL.println(payload);
+            }
+        } else {
+            USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+        }
+        http.end();
+    }
+
+    delay(5000);
+}
+```
+
+- メニューの「ファイル」→「保存」を選択し、適当なファイル名で保存します
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+- メニューの「ツール」→「シリアルモニタ」を選択します
+- シリアルモニタの右下で「115200 bps」を選択します
+- 5 秒毎に HTML コードが表示されることを確認します
+
 
 ### HTTPS PUSH
 
