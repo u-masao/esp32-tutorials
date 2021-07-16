@@ -341,6 +341,49 @@ LED と抵抗を直列に接続し、ESP32 の GPIO ピンに接続します。�
 
 ### サーボモーター
 
+- メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「ESP32Servo」と入力します
+- 「ESP32Servo」ライブラリを選択し、「インストール」ボタンをクリックします
+- メニューの「ファイル」→「新規ファイル」を選択します
+- 以下のプログラムを上書きします
+
+```
+/* 
+ * Use "ESP32Servo" library 
+ *   https://www.arduino.cc/reference/en/libraries/esp32servo/
+ */
+
+#define SERVO_PIN 23
+#define MIN_PERIOD 500 // 500 us <- 0 degree on SG92R
+#define MAX_PERIOD 2400 // 2400 us <- 180 degrees on SG92R
+#define PWM_FREQ 50
+
+#include <ESP32Servo.h>
+
+Servo servo;
+
+void setup() {
+  servo.setPeriodHertz(PWM_FREQ);
+  servo.attach(SERVO_PIN, MIN_PERIOD, MAX_PERIOD);
+}
+
+void loop() {
+  int pos;
+  for (pos = 0; pos <= 180; pos += 10) {
+    servo.write(pos);
+    delay(100);
+  }
+  for (pos = 180; pos >= 0; pos -= 10) {
+    servo.write(pos);
+    delay(100);
+  }
+}
+```
+
+- メニューの「ファイル」→「保存」を選択し、適当なファイル名で保存します
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+
+
 ## 入力編
 
 ### 気温、湿度、気圧センサー
