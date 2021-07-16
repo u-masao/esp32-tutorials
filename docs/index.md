@@ -168,10 +168,10 @@ Arduino IDE をインストールし、ESP32 用にセットアップします�
 6. 「行番号を表示する」をチェックします
 7. 「OK」をクリックします
 8. マイクロ USB ケーブルで ESP32 Dev Kit を PC に接続します（USB HUB を経由せず、直接 PC に接続してください）
-9. デバイスマネージャを開き、「ポート（COMとLPT）」で「Silicon Labs CP210x USB to UART Bridge(COM*)」のポート番号「COM*」を確認します
+9. デバイスマネージャを開き、「ポート（COMとLPT）」で「Silicon Labs CP210x USB to UART Bridge(COM**)」のポート番号「COM**」を確認します
 10. Arduino IDE を起動します
 11. メニューの「ツール」→「ボード：・・・・」→「ESP32 Arduino」→「NodeMCU-32S」を選びます（※※※ここ重要です）
-12. メニューの「ツール」→「シリアルポート」でポート番号「COM*」を選びます
+12. メニューの「ツール」→「シリアルポート」でポート番号「COM**」を選びます
 
 [参考サイト](https://www.indoorcorgielec.com/resources/arduinoide%E8%A8%AD%E5%AE%9A/esp-wroom-32%E6%90%AD%E8%BC%89%E8%A3%BD%E5%93%81/)
 
