@@ -407,6 +407,7 @@ void loop() {
 - メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
 - 「ライブラリマネージャ」ダイアログボックスの検索欄に「ESP32Servo」と入力します
 - 「ESP32Servo」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「閉じる」をクリックします
 - メニューの「ファイル」→「新規ファイル」を選択します
 - 以下のプログラムを上書きします
 
@@ -448,6 +449,46 @@ void loop() {
 
 ### 有機ELディスプレイ
 
+#### ハードウェア
+
+以下の通り接続します。
+
+| 有期ELディスプレイ | ESP32 Dev Kit |
+---|---
+| GND | GND ピン |
+| VCC | 3.3V ピン |
+| SCL | GPIO21 ピン |
+| SDA | GPIO22 ピン |
+
+
+#### ソフトウェア
+
+- メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「ssd1306 esp32」と入力します
+- 「ESP8266 and ESP32 OLED driver for SSD1306 displays」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「閉じる」をクリックします
+- メニューの「ファイル」→「スケッチ例」→「ESP8266 and ESP32 OLED driver for SSD1306 displays」→「SSD1306SimpleDemo」を選択します
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+
+
+#### 解説
+
+以下のデモが順番に表示されます。
+
+- FontFaceDemo
+  - 様々なフォントサイズ
+- TextFlowDemo
+  - 折り返して表示する長いテキスト
+- TextAlignmentDemo
+  - 右寄せ、左寄せ、センタリング
+- RectDemo
+  - 矩形の描画
+- CircleDemo
+  - 円の描画
+- ProgressBarDemo
+  - プログレスバー
+- ImageDemo
+  - ビットマップ画像
 
 
 ## 入力編
@@ -462,19 +503,21 @@ void loop() {
 
 #### タッチセンサー
 
-## HTTP 通信
 
-### Web Server 構築
+## コミュニケーション
 
-簡単なAPIサーバとRRD-Toolsで表示。
-Arduino IDE のライブラリマネージャーで PubSubClient をインストールします。
-[MQTT,Grafana](https://dzone.com/articles/playing-with-docker-mqtt-grafana-influxdb-python-a)
+### UART
+
+
+
+### I2C
+
 
 ### HTTP GET
 
 - Arduion IDE を起動します
-- メニューの「ファイル」→「スケッチ例」→「HttpClient」→「BasicHttpClient」を選択します
-- 以下の通り編集します（1行目と2行目は、ご利用のWiFiに接続する情報に修正してください）
+- メニューの「ファイル」→「新規ファイル」を選択します
+- 以下のプログラムを上書きします（1行目と2行目は、ご利用のWiFiに接続する情報に修正してください）
 
 ```c:
 #define WIFI_SSID "your_wifi_ssid"
@@ -525,19 +568,6 @@ void loop() {
 
 
 ### HTTPS PUSH
-
-## コミュニケーション
-
-### UART
-
-### I2C
-
-### TCP/IP
-
-#### HTTP
-
-#### HTTPS
-
 ## 情報源
 
 ### ESP-IDF
