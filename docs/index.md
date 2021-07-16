@@ -2,7 +2,7 @@
 
 ## はじめに
 
-この文書は、ESP32 のチュートリアルです。
+この文書は、ESP32 のチュートリアルです。説明は少なめにして「とりあえず動かしてみる」ことで、組み込みデバイスの雰囲気を体感して欲しいと思い作成しました。
 
 ## ESP32 とは
 
@@ -13,27 +13,28 @@ ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressi
 <img src="https://images-na.ssl-images-amazon.com/images/I/51ZcOB41f%2BL._AC_.jpg" />
 
 
-### ESP32 でできること
+### ESP32 で何ができるの
 
-- ESP32 本体ができること
+- ESP32 本体の機能
   - マルチコアを利用した並列処理
     - マルチスレッド通信
     - センシングと動作を並列化
 
 
-  - 無線接続（WPA2 をサポート）
-    - セキュアな無線通信を実現
+  - 無線接続（WiFi、WPA2 をサポート）
+    - セキュアな無線通信
 
 
-  - デジタル信号入出力
+  - デジタル信号の入出力
     - LED の点滅
     - 周辺機器の制御
+    - On/Off スイッチによる制御
 
   - アナログ信号入出力
     - センサー値の読み取り
 
   - GPIO、UART、SPI、I2C、CAN Bus による周辺機器との相互通信
-    - 様々な周辺機器との相互通信
+    - 様々なコンピューターとの相互通信
 
   - PWM、I2S、DAC による信号出力
     - サーボモーター等の制御
@@ -91,19 +92,19 @@ ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressi
 技適マークが付いていない無線機は、「免許を受けられない／違法になる」恐れがありますので無線機を購入・使用する際は十分ご注意下さい。
 
 
-<img src="https://www.tele.soumu.go.jp/j/adm/monitoring/summary/qa/giteki_mark/__icsFiles/artimage/2009/02/01/c_giteki_mar/giteki_new.jpg" alt="技適マーク" width="20%" height="20%" />
+<img src="https://www.tele.soumu.go.jp/j/adm/monitoring/summary/qa/giteki_mark/__icsFiles/artimage/2009/02/01/c_giteki_mar/giteki_new.jpg" alt="技適マーク" width="10%" height="10%" />
 
 
 ### ESP32 の種類
 
 この[サイト](https://lang-ship.com/blog/work/esp32-esp8266/#toc8)で確認してください。
 
-ESP32-DevKitC型(38pin) 22.86mm がオススメです。
+ESP32-DevKitC型(38pin) 22.86mm がオススメです。ピン番号は見えませんが、ブレッドボードに刺しても両側のピンが使えます。
 
 
 ### ESP32 と必要機器の購入
 
-一通り買います。全部買うと8,000円くらいです。
+全部買うと8,000円くらいです。
 
 #### Amazon で買うもの
 
@@ -116,19 +117,25 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。
 
 #### 秋月電子通商で買うもの
 
-- とりあえず買うもの（1,200円ぐらい）
-  - [普通の Micro USB ケーブル](https://akizukidenshi.com/catalog/g/gC-09314/) 1個
-  - [ブレッドボード](https://akizukidenshi.com/catalog/g/gP-00315/) 1個
-  - [ジャンパーワイヤー](https://akizukidenshi.com/catalog/g/gC-05371/) 1セット
-  - [ジョイスティック](https://akizukidenshi.com/catalog/g/gK-15233/) 1個
-  - [白色LED 5mm](https://akizukidenshi.com/catalog/g/gI-02024/) 1セット
-  - [カーボン抵抗 １／６Ｗ３３０Ω（１００本入）](https://akizukidenshi.com/catalog/g/gR-16331/) 1セット
+とりあえず買うもの
 
-- お好みで買うもの（4,500円ぐらい）
-  - [サーボモーター](https://akizukidenshi.com/catalog/g/gM-08914/) 1個 500円
-  - [有機ELディスプレイ](https://akizukidenshi.com/catalog/g/gP-12031/) 1個 600円
-  - [温湿度気圧センサー](https://akizukidenshi.com/catalog/g/gK-09421/) 1個 1,000円
-  - [CO2センサーモジュール](https://akizukidenshi.com/catalog/g/gM-16142/) 1個 2,500円
+| 品名 | 数量 | 単価 |
+---|---|---
+| [普通の Micro USB ケーブル](https://akizukidenshi.com/catalog/g/gC-09314/) | 1個 | 120円 |
+| [ブレッドボード](https://akizukidenshi.com/catalog/g/gP-00315/) | 1個 | 270円 |
+| [ジャンパーワイヤー](https://akizukidenshi.com/catalog/g/gC-05371/) | 1セット | 180円 |
+| [白色LED 5mm](https://akizukidenshi.com/catalog/g/gI-02024/) | 1セット | 120円 |
+| [カーボン抵抗 １／６Ｗ３３０Ω（１００本入）](https://akizukidenshi.com/catalog/g/gR-16331/) | 1セット | 100円 |
+
+お好みで買うもの
+
+| 品名 | 数量 | 単価 |
+---|---|---
+| [ジョイスティック](https://akizukidenshi.com/catalog/g/gK-15233/) | 1個 | 300円 |
+| [サーボモーター](https://akizukidenshi.com/catalog/g/gM-08914/) | 1個 | 500円 |
+| [有機ELディスプレイ](https://akizukidenshi.com/catalog/g/gP-12031/) | 1個 | 600円 |
+| [温湿度気圧センサー](https://akizukidenshi.com/catalog/g/gK-09421/) | 1個 | 1,000円 |
+| [CO2センサーモジュール](https://akizukidenshi.com/catalog/g/gM-16142/) | 1個 | 2,500円 |
 
 ### ESP32 の開発環境
 
