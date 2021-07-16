@@ -111,7 +111,6 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。ピン番号は見えま
 - ESP32 Dev Kit 本体（1個1,100円です。2個以上買うのをオススメします）
   - [HiLetgo ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetoothデュアルモード](https://www.amazon.co.jp/dp/B0718T232Z?tag=langship-22&linkCode=ogi&th=1&psc=1)
 
-<img src="https://esphome.io/_images/nodemcu_esp32-full.jpg" alt="NodeMCU-32S ピンアサイン" width="100%" height="100%" />
 
 
 
@@ -335,6 +334,12 @@ LED on
 LED off
 LED on
 ```
+
+## ESP32 Dev Kit について
+
+各ピンに番号や機能が割り当てられています。この割り当て状況を「ピンアサイン」と呼び、設計に利用します。
+
+<img src="https://esphome.io/_images/nodemcu_esp32-full.jpg" alt="NodeMCU-32S ピンアサイン" width="100%" height="100%" />
 
 
 ## 出力編
