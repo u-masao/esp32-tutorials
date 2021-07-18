@@ -863,7 +863,7 @@ https://akizukidenshi.com/catalog/
 
 https://www.ebay.com/
 
-### aliexpress
+### AliExpress
 
 海外のフリマサイトですが、シンセン（中国）や香港から低価格で素敵なパーツをゲットできます。サイトは日本語化されています。
 
