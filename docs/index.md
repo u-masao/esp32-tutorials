@@ -426,18 +426,6 @@ void loop() {
 - メニューの「ファイル」→「スケッチ例」→「ESP32Servo」→「Sweep」を選択します
 - 以下を修正します
 
-GPIO23 ピンをサーボ出力に設定します
-
-``` c
-int servoPin = 23;
-```
-
-サーボの機種に応じた PWM の duration を設定します
-
-``` c
-	myservo.attach(servoPin, 500, 2400);
-```
-
 ``` c
 
 #include <ESP32Servo.h>
@@ -542,6 +530,125 @@ OLED のデモを動かします。
 
 ## コミュニケーション
 
+
+### Smartphone App
+
+Dabble というアプリから ESP32 をコントロールします。
+
+#### ハードウェア
+
+手元のスマートフォンに Dabble というアプリをインストールします。
+
+ESP32 には USB ケーブルだけを接続し、その他は何も接続しません。
+
+#### ソフトウェア
+
+- メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「DabbleESP32」と入力します
+- 「DabbleESP32」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「閉じる」をクリックします
+- メニューの「ファイル」→「スケッチ例」→「DabbleESP32」→「03.Gamepad」を選択します
+
+``` c
+/*
+   Gamepad module provides three different mode namely Digital, JoyStick and Accerleometer.
+
+   You can reduce the size of library compiled by enabling only those modules that you want to
+   use. For this first define CUSTOM_SETTINGS followed by defining INCLUDE_modulename.
+
+   Explore more on: https://thestempedia.com/docs/dabble/game-pad-module/
+*/
+#define CUSTOM_SETTINGS
+#define INCLUDE_GAMEPAD_MODULE
+#include <DabbleESP32.h>
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);      // make sure your Serial Monitor is also set at this baud rate.
+  Dabble.begin("MyEsp32");       //set bluetooth name of your device
+}
+
+void loop() {
+  Dabble.processInput();             //this function is used to refresh data obtained from smartphone.Hence calling this function is mandatory in order to get data properly from your mobile.
+  Serial.print("KeyPressed: ");
+  if (GamePad.isUpPressed())
+  {
+    Serial.print("Up");
+  }
+
+  if (GamePad.isDownPressed())
+  {
+    Serial.print("Down");
+  }
+
+  if (GamePad.isLeftPressed())
+  {
+    Serial.print("Left");
+  }
+
+  if (GamePad.isRightPressed())
+  {
+    Serial.print("Right");
+  }
+
+  if (GamePad.isSquarePressed())
+  {
+    Serial.print("Square");
+  }
+
+  if (GamePad.isCirclePressed())
+  {
+    Serial.print("Circle");
+  }
+
+  if (GamePad.isCrossPressed())
+  {
+    Serial.print("Cross");
+  }
+
+  if (GamePad.isTrianglePressed())
+  {
+    Serial.print("Triangle");
+  }
+
+  if (GamePad.isStartPressed())
+  {
+    Serial.print("Start");
+  }
+
+  if (GamePad.isSelectPressed())
+  {
+    Serial.print("Select");
+  }
+  Serial.print('\t');
+
+  int a = GamePad.getAngle();
+  Serial.print("Angle: ");
+  Serial.print(a);
+  Serial.print('\t');
+  int b = GamePad.getRadius();
+  Serial.print("Radius: ");
+  Serial.print(b);
+  Serial.print('\t');
+  float c = GamePad.getXaxisData();
+  Serial.print("x_axis: ");
+  Serial.print(c);
+  Serial.print('\t');
+  float d = GamePad.getYaxisData();
+  Serial.print("y_axis: ");
+  Serial.println(d);
+  Serial.println();
+}
+```
+
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+- メニューの「ツール」→「シリアルモニタ」を選択します
+- シリアルモニタの右下で「115200 bps」を選択します
+
+#### 動作確認
+
+- スマートフォンで Dabble アプリを開きます
+- 画面右上の接続ボタンをタップします
+
 ### UART
 
 
@@ -605,6 +712,94 @@ void loop() {
 
 
 ### HTTPS PUSH
+
+## 応用例
+
+
+### スマートフォンでサーボを制御
+
+#### ハードウェア
+
+以下の通り接続します。
+
+| サーボモーター | ESP32 Dev Kit |
+---|---
+| 茶コード | GND ピン |
+| 橙コード | GPIO23 ピン |
+| 黄コード | 5V ピン |
+
+
+#### ソフトウェア
+
+- メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「DabbleESP32」と入力します
+- 「DabbleESP32」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「ESP32Servo」と入力します
+- 「ESP32Servo」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「閉じる」をクリックします
+- メニューの「ファイル」→「スケッチ例」→「ESP32Servo」→「Sweep」を選択します
+- メニューの「ファイル」→「スケッチ例」→「DabbleESP32」→「03.Gamepad」を選択します
+- メニューの「ファイル」→「新規ファイル」を選択します
+- 二つのサンプルコードを見ながら、必要そうな箇所を新規ファイルにコピペします
+
+``` c
+#define CUSTOM_SETTINGS
+#define INCLUDE_GAMEPAD_MODULE
+#include <DabbleESP32.h>
+#include <ESP32Servo.h>
+
+Servo myservo;
+int pos = 0;
+int servoPin = 23;
+
+void setup() {
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  myservo.setPeriodHertz(50);    // standard 50 hz servo
+  myservo.attach(servoPin, 500, 2400);
+  Dabble.begin("MyEsp32");       //set bluetooth name of your device
+}
+
+void loop() {
+  Dabble.processInput();
+  
+  if (GamePad.isLeftPressed())
+  {
+    Serial.print("Left");
+    pos = pos - 10;
+  }
+
+  if (GamePad.isRightPressed())
+  {
+    Serial.print("Right");
+    pos = pos + 10;
+  }
+
+  if (pos < 0) {
+    pos = 0;
+  }
+  if (pos > 180) {
+    pos = 180;
+  }
+  myservo.write(pos);
+  delay(50);
+}
+```
+
+- メニューの「ファイル」→「保存」を選択し、適当なファイル名で保存します
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+
+#### 動作確認
+
+- スマートフォンで Dabble アプリを起動します
+- Dabble アプリで Gamepad を選択します
+- Dabble アプリで画面右上の接続ボタンをタップします
+- MyEsp32 をタップします
+- 「Yes」をタップして自動接続を有効にします
+- Gamepad の右左ボタンでサーボの角度を指示します
+
 
 ## 情報源
 
