@@ -432,14 +432,53 @@ GPIO23 ピンをサーボ出力に設定します
 int servoPin = 23;
 ```
 
-サーボの角度 0 度を PWM の duration 500 us、サーボの角度 180 度を PWM の duration 2400 us に設定します。
+サーボの機種に応じた PWM の duration を設定します
 
 ``` c
 	myservo.attach(servoPin, 500, 2400);
 ```
 
+``` c
+
+#include <ESP32Servo.h>
+
+Servo myservo;  // create servo object to control a servo
+// 16 servo objects can be created on the ESP32
+
+int pos = 0;    // variable to store the servo position
+// Recommended PWM GPIO pins on the ESP32 include 2,4,12-19,21-23,25-27,32-33 
+int servoPin = 23;  // ※修正 GPIO23 ピンをサーボ出力に設定します
+
+void setup() {
+	// Allow allocation of all timers
+	ESP32PWM::allocateTimer(0);
+	ESP32PWM::allocateTimer(1);
+	ESP32PWM::allocateTimer(2);
+	ESP32PWM::allocateTimer(3);
+	myservo.setPeriodHertz(50);    // standard 50 hz servo
+	myservo.attach(servoPin, 500, 2400);  // ※修正 サーボの機種に応じた PWM の duration を設定します
+	// using default min/max of 1000us and 2000us
+	// different servos may require different min/max settings
+	// for an accurate 0 to 180 sweep
+}
+
+void loop() {
+
+	for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+		// in steps of 1 degree
+		myservo.write(pos);    // tell servo to go to position in variable 'pos'
+		delay(50); // ※修正 15ms だと短すぎるので長めにします
+	}
+	for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+		myservo.write(pos);    // tell servo to go to position in variable 'pos'
+		delay(50); // ※修正 15ms だと短すぎるので長めにします
+	}
+}
+```
+
 - メニューの「ファイル」→「保存」を選択し、適当なファイル名で保存します
 - メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+
 
 ### 有機ELディスプレイ（OLED）
 
