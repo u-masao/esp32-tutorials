@@ -8,7 +8,8 @@
 
 ### ESP32 とは
 
-ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressif.com/) が開発するマイクロコントローラーのシリーズ名です。Wi-Fi と Bluetooth を内蔵しており、Windows、Linux、Mac で開発することができます。500円～700円程度と低価格ながら、[多くの種類のインタフェース](https://ja.wikipedia.org/wiki/ESP32) をサポートしています。開発キットを利用することで、PC や Mac からマイクロ USB ケーブルで接続し、C 言語、MicroPython、JavaScript、lua、mruby でプログラミングすることができます。日本国内では、技適マークが無い ESP32 で電波を発射すると電波法違反の罪に問われます。必ず、技適マークがある機器を購入してください。
+ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressif.com/) が開発するマイクロコントローラーのシリーズ名です。Wi-Fi と Bluetooth を内蔵しており、Windows、Linux、Mac で開発することができます。500円～700円程度と低価格ながら、[多くの種類のインタフェース](https://ja.wikipedia.org/wiki/ESP32) をサポートしています。開発キットを利用することで、PC や Mac からマイクロ USB ケーブルで接続し、C 言語、MicroPython、JavaScript、lua、mruby でプログラミングすることができます。
+日本国内では、技適マークが無い ESP32 で電波を発射すると電波法違反の罪に問われます。必ず、技適マークがある機器を購入してください。
 
 <img src="https://images-na.ssl-images-amazon.com/images/I/51ZcOB41f%2BL._AC_.jpg" />
 
@@ -97,7 +98,7 @@ ESP32 は、上海に拠点を置く[Espressif Systems 社](https://www.espressi
 
 ### ESP32 の種類
 
-この[サイト](https://lang-ship.com/blog/work/esp32-esp8266/#toc8)で確認してください。
+数多くのチップと開発ボードが販売されています。詳しくはこの[サイト](https://lang-ship.com/blog/work/esp32-esp8266/#toc8)で確認してください。
 
 ESP32-DevKitC型(38pin) 22.86mm がオススメです。ピン番号は見えませんが、ブレッドボードに刺しても両側のピンが使えます。
 
@@ -105,6 +106,7 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。ピン番号は見えま
 ### ESP32 と必要機器の購入
 
 全部買うと8,000円くらいです。
+
 
 #### Amazon で買うもの
 
@@ -134,20 +136,23 @@ ESP32-DevKitC型(38pin) 22.86mm がオススメです。ピン番号は見えま
 | [温湿度気圧センサー](https://akizukidenshi.com/catalog/g/gK-09421/) | 1個 | 1,000円 |
 | [CO2センサーモジュール](https://akizukidenshi.com/catalog/g/gM-16142/) | 1個 | 2,500円 |
 
+
 ### ESP32 の開発環境
 
-主要開発環境の、Arduino-IDE を紹介します。
+ESP32 の開発環境を紹介します。
+
 
 #### Arduino-IDE
 
-
 本来は、Arduino というマイコン向けの IDE （統合開発環境）です。ESP32 用のモジュールをインストールすることで、ESP32 の開発環境になります。単純なプログラムを作る場合は、Arduino-IDE で十分なことが多いです。
+
+#### ESP-IDF
+
+[ESP-IDF](https://github.com/espressif/esp-idf) は、Linux で動作する ESP32 のネイティブの開発環境です。フル機能を使いたい場合は、ESP-IDF を使うのが早道です。多数のサンプルコードがありとても有用ですが、微妙に実装が不十分だったり、普通にバグがあったりもします。Arduino IDE よりもビルドが早い気がします。日本語情報は少なめです。Windows の WSL2 は、シリアルポートに対応していないため書き込みができません。初代 WSL を使って頑張ってもいいですが、ネイティブの Linux PC を使うのが安心です。ネイティブな Windows 環境では、動かないと思います。
 
 #### その他
 
-ESP-IDF、MicroPython 等があります。
-[ESP-IDF](https://github.com/espressif/esp-idf) は、Linux で動作する ESP32 のネイティブの開発環境です。フル機能を使いたい場合は、ESP-IDF を使うのが早道です。多数のサンプルコードがありとても有用ですが、微妙に実装が不十分だったり、普通にバグがあったりもします。
-Windows の WSL2 は、シリアルポートに対応していないため書き込みができません。初代 WSL を使うか、ネイティブの Linux PC を使うのが安心です。ネイティブな Windows 環境では、動かないと思います。
+MicroPython、JavaScript で開発できる環境があるそうです。VScode を使うことも可能です。
 
 
 ## 開発環境の構築
@@ -515,7 +520,7 @@ OLED のデモを動かします。
 
 ## 入力編
 
-### 気温、湿度、気圧センサー
+様々な入力デバイスを使ってみます。
 
 ### 内蔵センサー
 
@@ -525,11 +530,15 @@ OLED のデモを動かします。
 
 #### タッチセンサー
 
+### 気温、湿度、気圧センサー
+
+### CO2 センサー
+
 
 ## コミュニケーション
 
 
-### Smartphone App
+### スマホアプリ
 
 Dabble というアプリから ESP32 をコントロールします。
 
@@ -706,14 +715,18 @@ void loop() {
 
 ### HTTPS PUSH
 
+HTTP PUSH で外部サイトにデータを送ります。（作成中）
+
 ### UART
 
+UART でデバイス間通信をします。（作成中）
 
 ### I2C
 
+I2C でデバイス間通信をします。（作成中）
+
 
 ## 応用例
-
 
 ### スマートフォンでサーボを制御
 
@@ -810,21 +823,54 @@ void loop() {
 
 ## 情報源
 
-### Arduino-IDE サンプルファイル
+ESP32 で遊ぶ際の情報源を書きます。
+
+### Arduino-IDE スケッチ例
+
+やりたいことがある場合は、Arduino IDE のスケッチ例（サンプルコード）が役に立ちます。
 
 ### ESP-IDF
 
-### ESP32 DevKit
+ハードコアに遊ぶ場合は、本家の情報を使います。
+
+https://github.com/espressif/esp-idf
 
 ## 購入方法
 
-### 秋月電子
+### 秋月電子通商
+
+電子パーツの通販サイトです。わりとメジャーなパーツを扱っています。パーツの仕様が掲載されているため、購入後もお世話になると思います。
+
+https://akizukidenshi.com/catalog/
 
 ### e-bay
 
+海外のフリマサイトですが、シンセン（中国）や香港から低価格で素敵なパーツをゲットできます。期間はかかりますが、送料無料が多いです。
+怪しい業者の出品は、華麗にスルーしましょう。
+
+https://www.ebay.com/
+
 ### aliexpress
+
+海外のフリマサイトですが、シンセン（中国）や香港から低価格で素敵なパーツをゲットできます。サイトは日本語化されています。
+
+https://ja.aliexpress.com/
 
 ### スイッチサイエンス
 
-### Amazon
+チャンとしたものを買いたいときはこちらです。高いけど。
+
+https://www.switch-science.com/
+
+### aitendo
+
+ヤバイもの買いたいときはこちらです。技適無し等の日本の法令を無視したデバイスも販売しています。シンセン（中国）から低価格で謎のパーツをゲットできます。
+
+https://www.aitendo.com/
+
+### Amazon Japan
+
+中国の業者さんが数多く出店していてパーツを販売しています。良し悪しが見えにくいので、慣れないうちは専門店で買った方が良いと思います。→ 秋月電子通商、スイッチサイエンス
+
+https://www.amazon.co.jp/
 
