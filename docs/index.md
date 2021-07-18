@@ -194,7 +194,7 @@ Arduino IDE をインストールし、ESP32 用にセットアップします�
 - メニューの「ファイル」→「スケッチ例」→「01.Bacis」→「Blink」を選択します
 - 以下の通り編集します
 
-```c:
+``` c
 #define LED_BUILTIN 2     /* この行を追加 */
 
 // the setup function runs once when you press reset or power the board
@@ -260,7 +260,7 @@ Hard resetting via RTS pin...
 - メニューの「ファイル」→「新規ファイル」を選択します
 - 以下の通り編集します
 
-```c:
+``` c
 #define LED_BUILTIN 2
 
 void setup() {
@@ -382,7 +382,7 @@ LED on
 - メニューの「ファイル」→「新規ファイル」を選択します
 - 以下のプログラムを上書きします
 
-```c:
+``` c
 #define LED_BUILTIN 23
 
 void setup() {
@@ -417,44 +417,25 @@ void loop() {
 
 #### ソフトウェア
 
+
+
 - メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
 - 「ライブラリマネージャ」ダイアログボックスの検索欄に「ESP32Servo」と入力します
 - 「ESP32Servo」ライブラリを選択し、「インストール」ボタンをクリックします
 - 「閉じる」をクリックします
-- メニューの「ファイル」→「新規ファイル」を選択します
-- 以下のプログラムを上書きします
+- メニューの「ファイル」→「スケッチ例」→「ESP32Servo」→「Sweep」を選択します
+- 以下を修正します
 
-```c:
-/* 
- * Use "ESP32Servo" library 
- *   https://www.arduino.cc/reference/en/libraries/esp32servo/
- */
+GPIO23 ピンをサーボ出力に設定します
 
-#define SERVO_PIN 23
-#define MIN_PERIOD 500 // 500 us <- 0 degree on SG92R
-#define MAX_PERIOD 2400 // 2400 us <- 180 degrees on SG92R
-#define PWM_FREQ 50
+``` c
+int servoPin = 23;
+```
 
-#include <ESP32Servo.h>
+サーボの角度 0 度を PWM の duration 500 us、サーボの角度 180 度を PWM の duration 2400 us に設定します。
 
-Servo servo;
-
-void setup() {
-  servo.setPeriodHertz(PWM_FREQ);
-  servo.attach(SERVO_PIN, MIN_PERIOD, MAX_PERIOD);
-}
-
-void loop() {
-  int pos;
-  for (pos = 0; pos <= 180; pos += 10) {
-    servo.write(pos);
-    delay(100);
-  }
-  for (pos = 180; pos >= 0; pos -= 10) {
-    servo.write(pos);
-    delay(100);
-  }
-}
+``` c
+	myservo.attach(servoPin, 500, 2400);
 ```
 
 - メニューの「ファイル」→「保存」を選択し、適当なファイル名で保存します
@@ -536,7 +517,7 @@ HTTP プロトコルでインターネットの Web サーバーから情報を�
 - メニューの「ファイル」→「新規ファイル」を選択します
 - 以下のプログラムを上書きします（1行目と2行目は、ご利用のWiFiに接続する情報に修正してください）
 
-```c:
+``` c
 #define WIFI_SSID "your_wifi_ssid"
 #define WIFI_SECRET "your_wifi_secret"
 #define USE_SERIAL Serial
