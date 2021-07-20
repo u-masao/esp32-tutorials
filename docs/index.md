@@ -480,7 +480,7 @@ OLED のデモを動かします。
 
 以下の通り接続します。
 
-| 有期ELディスプレイ | ESP32 Dev Kit |
+| 有機ELディスプレイ | ESP32 Dev Kit |
 ---|---
 | GND | GND ピン |
 | VCC | 3.3V ピン |
@@ -533,6 +533,67 @@ OLED のデモを動かします。
 ### 気温、湿度、気圧センサー
 
 ### CO2 センサー
+
+CO2センサーモジュールを使って空気中の二酸化炭素濃度を計測します。
+
+#### 仕様
+
+現在の二酸化炭素濃度をシリアルコンソールに出力します。
+
+#### ハードウェア
+
+以下の通り接続します。
+
+| MH-Z19C | ESP32 Dev Kit |
+---|---
+| GND | GND ピン |
+| Vin | 5V ピン |
+| PWM | GPIO23 ピン |
+
+#### ソフトウェア
+
+- Arduion IDE を起動します
+- メニューの「ファイル」→「新規ファイル」を選択します
+- 以下のプログラムを上書きします（1行目と2行目は、ご利用のWiFiに接続する情報に修正してください）
+
+``` c
+
+#define CO2_SENSOR 23
+
+float co2_ppm;
+long ts_up, ts_down, period_low, period_high;
+
+void IRAM_ATTR edge_change() {
+  long ts = millis();
+  if (digitalRead(CO2_SENSOR) == HIGH) {
+    ts_up = ts;
+    period_low = ts_up - ts_down;
+  } else {
+    ts_down = ts;
+    period_high = ts_down - ts_up;
+    co2_ppm = 5000.0 * (period_high - 2.0) / (period_high + period_low - 4.0);
+  }
+}
+
+void setup() {
+  Serial.begin(115200);  // デバッグ用
+  co2_ppm = 400.0; // 暫定値を与える
+  pinMode(CO2_SENSOR, INPUT);  // デフォルトでINPUTだけど明示的に指定
+  ts_up = millis();  // 初期値を与える
+  attachInterrupt(digitalPinToInterrupt(CO2_SENSOR), edge_change, CHANGE);
+}
+
+void loop() {
+  Serial.println(co2_ppm);  // デバッグ用
+  delay(1000);
+}
+```
+
+- メニューの「ファイル」→「保存」を選択し、適当なファイル名で保存します
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+- メニューの「ツール」→「シリアルモニタ」を選択します
+- シリアルモニタの右下で「115200 bps」を選択します
+- 1 秒毎に二酸化炭素濃度が出力されることを確認します
 
 
 ## コミュニケーション
@@ -819,6 +880,98 @@ void loop() {
 - 「Yes」をタップして自動接続を有効にします
 - Gamepad の右左ボタンでサーボの角度を指示します
 - ボタン操作に応じてサーボの角度が変化します
+
+
+### CO2 濃度をOLEDで表示する
+
+
+#### ハードウェア
+
+以下の通りハードウェアを接続します。
+
+| 有機ELディスプレイ | ESP32 Dev Kit |
+---|---
+| GND | GND ピン |
+| VCC | 3.3V ピン |
+| SCL | GPIO21 ピン |
+| SDA | GPIO22 ピン |
+
+| MH-Z19C | ESP32 Dev Kit |
+---|---
+| GND | GND ピン |
+| Vin | 5V ピン |
+| PWM | GPIO23 ピン |
+
+#### ソフトウェア
+
+- メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「ssd1306 esp32」と入力します
+- 「ESP8266 and ESP32 OLED driver for SSD1306 displays」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「閉じる」をクリックします
+- メニューの「ファイル」→「新規ファイル」を選択します
+- 以下の通り編集します
+
+``` c
+#include <Wire.h>
+#include "SSD1306Wire.h"
+
+#define CO2_SENSOR 23
+
+SSD1306Wire display(0x3c, SDA, SCL);  // I2C address, SDA pin, SCL pin
+
+float co2_ppm;
+long ts_up, ts_down, period_low, period_high;
+
+void IRAM_ATTR edge_change() {
+  long ts = millis();
+  if (digitalRead(CO2_SENSOR) == HIGH) {
+    ts_up = ts;
+    period_low = ts_up - ts_down;
+  } else {
+    ts_down = ts;
+    period_high = ts_down - ts_up;
+    co2_ppm = 5000.0 * (period_high - 2.0) / (period_high + period_low - 4.0);
+  }
+}
+
+void setup() {
+  Serial.begin(115200);  // デバッグ用
+  co2_ppm = 400.0; // 暫定値を与える
+  pinMode(CO2_SENSOR, INPUT);  // デフォルトでINPUTだけど明示的に指定
+  ts_up = millis();  // 初期値を与える
+  attachInterrupt(digitalPinToInterrupt(CO2_SENSOR), edge_change, CHANGE);
+
+  // OLED 初期化
+  display.init();
+  display.flipScreenVertically();
+}
+
+void loop() {
+  Serial.println(co2_ppm);  // デバッグ用
+
+  // OLED 表示
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(0, 0, "CO2:");
+  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  display.setFont(ArialMT_Plain_24);
+  display.drawString(90, 26, String(co2_ppm, 0));
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(95, 32, "[ ppm ]");
+  display.display();
+
+  delay(500);
+}
+```
+
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+
+
+#### 動作確認
+
+- OLED に現在の二酸化炭素濃度が表示されることを確認します
 
 ### CO2 濃度をサーバーへ送信する（作成中）
 
