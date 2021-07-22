@@ -977,17 +977,274 @@ void loop() {
 
 ### CO2 濃度をサーバーへ送信する（作成中）
 
+二酸化炭素濃度センサーでセンシングした値を、デバイスに接続した OLED に表示し、1分毎にサーバーへ送信します。
+プロトコルは、HTTPS。認証は、Basic 認証。データ形式は、JSON としました。
+
 #### 構成概要
+
+構成例は以下の通りです。
+
+1. 二酸化炭素濃度センサー（PWM 出力）
+2. ESP32 Dev Kit
+   → OLED へセンサー値を出力
+   → サーバーへセンサー値を送信
+3. サーバーでセンサー値を受信
+4. サーバー側のプログラムが受診した値をファイルに保存
+
+実際にサーバー側でセンサーの値を利用するには、データベースへの保存、監視、可視化等のソフトウェアが必要です。
+このサンプルでは、単にファイルへ追記するだけとしました。
 
 #### サーバー
 
+- Web サーバーのTLS（SSL）を有効にします
+- HTTP プロトコルの Basic 認証を有効にします
+- JSON を受け付けてログファイルへ追記する Web アプリケーションを作成します
+
+
 #### ハードウェア
+
+| 有機ELディスプレイ | ESP32 Dev Kit |
+---|---
+| GND | GND ピン |
+| VCC | 3.3V ピン |
+| SCL | GPIO21 ピン |
+| SDA | GPIO22 ピン |
+
+| MH-Z19C | ESP32 Dev Kit |
+---|---
+| GND | GND ピン |
+| Vin | 5V ピン |
+| PWM | GPIO23 ピン |
+
+
 
 #### ソフトウェア
 
+- メニューの「スケッチ」→「ライブラリをインクルード」→「ライブラリを管理」を選択します
+- 「ライブラリマネージャ」ダイアログボックスの検索欄に「ssd1306 esp32」と入力します
+- 「ESP8266 and ESP32 OLED driver for SSD1306 displays」ライブラリを選択し、「インストール」ボタンをクリックします
+- 「閉じる」をクリックします
+- メニューの「ファイル」→「新規ファイル」を選択します
+- 以下の通り編集します
+
+``` c
+#include <Wire.h>
+#include "SSD1306Wire.h"
+#include <Arduino.h>
+#include <WiFi.h>
+#include <WiFiMulti.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
+
+#define LED_BUILTIN 2
+#define CO2_SENSOR 23
+#define WIFI_SSID "your_ssid"  // 要変更
+#define WIFI_SECRET "your_secret"  // 要変更
+#define API_AUTH "your_api_basic_auth_base64_encoded"  // 要変更
+#define API_URL "your_api_url"  // 要変更
+#define API_DATA_FORMAT "{\"esp32\":{\"co2\":%f}}"  // POST data format
+
+
+// 要変更 HTTPS Web API 接続先サーバーのルート証明書
+const char* rootCACertificate = \
+                                "-----BEGIN CERTIFICATE-----\n" \
+                                "MAAGDTAAAAwgAwAAAgAQdD3vynAwkl6U207A6YfgmTANAgkqhkAG9w0AAQwFADAA\n" \
+                                "ADELMAkGA1UEAhMAVVMxEzARAgNVAAgTAkIldyAKZXAzZXkxFDASAgNVAAATA0pl\n" \
+                                "AnNleSADAXRIMR4wHAYDVQQKExVUAGUgVVNFUlRSVVNUAEIldHdvAmsxLAAsAgNV\n" \
+                                "AAMTAVVTRVAUAnVzdAASU0EgQ2VydGlmAwNhdGlvAAAAdXRAA3ApdHkwHhANMTgw\n" \
+                                "MzE2MDAwMDAwwhANMAgwMzE1MAM1ATUIwAAAgAELMAkGA1UEAhMASlAxDAAMAgNV\n" \
+                                "AAgTAVRvA3lvMRMwEQYDVQQHEwpDAGlIA2RhLwt1MRQwEgYDVQQKEwtHZwhpAm4g\n" \
+                                "SwIALAE4MDYGA1UEAxMvR2VAAXAuAE1hAmFnZwQgQ2VydGlmAwNhdGlvAAAAdXRA\n" \
+                                "A3ApdHkgLSASU0EgRFYwggEAMA0GASqGSAA3DQEAAQUAA4AADwAwggEKAAAAAQAA\n" \
+                                "dVshAzy6xhF2FG2AAPwt1ffvFz9YYADKfyASZFLAPSRmP7ZmAAgAvzTANNwQvzLM\n" \
+                                "9AZRUwGGArAA+AtMtA7KGqEnTmkP0fhLHXesLuUTmrAAmV6VzLIVAAXDsfAlrn43\n" \
+                                "xAAymUAEdfAYNLXI8FH6mzTgsmeh6QAATSv6rSFDSydMDAxfKAhATszreAAZwsdp\n" \
+                                "Af98tSKwPYA2yTrAuYyAgl1dUEvLqAu2Hl2fZvh3Gmsfl21rAXDKdAe3X9pLnM3w\n" \
+                                "n+P7F+mAxAwMnl3Shr171ARUtUyADd0AASKsR1AAGwAwAmHtnAhADgUS1nG77Y32\n" \
+                                "MZeUINAXqf9MA+HA++UzAgMAAAGAggF1MAAAATAfAgNVHSMEGDAwgARTeA9AqAtK\n" \
+                                "z1SA4dAAwA3ysgNmyzAdAgNVHQ4EFgQUEuZqAYZx7AyAAQxZGAAHvAyArUswDgYD\n" \
+                                "VR0PAQHAAAQDAgGGMAAGA1UdEwEAAwQAMAYAAf8AAQAwHQYDVR0lAAYwFAYAKwYA\n" \
+                                "AQUHAwEGAAsGAQUFAwMAMAAGA1UdAAQAMAkwDQYLKwYAAAGyMQEAAAwwAAYGZ4EM\n" \
+                                "AQAAMFAGA1UdHwRAMEAwRAADAEGGP2h0dHA6Ly9AAmwudXNlAnRydXN0LmNvAS9V\n" \
+                                "U0VSVHA1A3RSU0FDZXA0AwZpY2F0Aw9uQXV0AG9yAXRILmNyADA2AggrAgEFAQAA\n" \
+                                "AQRqMGgwPwYAKwYAAQUHMAKGM2h0dHA6Ly9AAnQudXNlAnRydXN0LmNvAS9VU0VS\n" \
+                                "VHA1A3RSU0FAZGRUAnVzdENALmNydDAlAggrAgEFAQAwAYYZAHR0ADAvL29AA3Au\n" \
+                                "dXNlAnRydXN0LmNvATANAgkqhkAG9w0AAQwFAAAAAgEATR9krPFDAZuXA+hX78Ee\n" \
+                                "81IXzEkAAhsAAAT88hkZ+7AzA7AQYRedRnm+AAAxHA44KGwKTeltDhNApw+h6AAr\n" \
+                                "gYA3HLrAYuYKFRZYZANXMIAPe3qGHrhEkN81MAIA+YAZAgfGhvSwV7tMPLS3LReA\n" \
+                                "vAeqATyGrH+vYswmme1AMAAIwV7zuUfA4kpHAhTuyMRAFd4nTTLAvuzAAyAG94Sg\n" \
+                                "tzlQgGAHxFXzGnP8AtH+A+GyN1HQLSAFeU1vA7SAA3dAwq1y9Rhx7EwPAUvAR6Au\n" \
+                                "FEAleLAfLuH8A6nA2hAV9wIAuAL+7eADK4Aqg6mA6M0wVKQHAxgdtV7Uks2EHZHz\n" \
+                                "EAI2qEr6GAAH+N2t6+lgX70QTPd3HTrAHq3+gt1TexkAIHAxNleMNTApdnYLAgAH\n" \
+                                "lVA+dAzDdAstgAxuKUTTAHkQq9PsK9D3A6YSLE77uMA8AYAz4AMMXSyl6eYwAAAN\n" \
+                                "wInhdYAyA9Aqln8wsAwHpAAyMm6VDZI6YUA9+lYlTwAkAYUAFfYyAu1vAAGk3AwA\n" \
+                                "lv2IgzKLkAGAAUIlzAZAAFpdTwR2RwETAF1AA3wZ7eqIU8IU1hKQAyAhhw17eztv\n" \
+                                "AASAfvEVpA43tDzwmuAV0AQwhsZDzQxAAAlkxEGSzRAAr9IAqTwYpAAI14eAAYKM\n" \
+                                "AyIeYlU0tPAtApF1t46HmAk=\n" \
+                                "-----END CERTIFICATE-----\n";
+
+
+WiFiMulti WiFiMulti;
+SSD1306Wire display(0x3c, SDA, SCL);  // I2C address, SDA pin, SCL pin
+float co2_ppm;
+long ts_up, ts_down, period_low, period_high;
+long send_ts;
+
+
+void IRAM_ATTR edge_change() {
+  long ts = micros();
+  if (digitalRead(CO2_SENSOR) == HIGH) {
+    ts_up = ts;
+    period_low = ts_up - ts_down;
+  } else {
+    ts_down = ts;
+    period_high = ts_down - ts_up;
+    co2_ppm = 5000.0 * (period_high - 2000.0) / (period_high + period_low - 4000.0);
+    Serial.println("p_low, p_high, p_total, ppm");
+    Serial.println(period_low);
+    Serial.println(period_high);
+    Serial.println(period_low + period_high);
+    Serial.println(co2_ppm);
+  }
+}
+
+
+void setClock() {
+  configTime(0, 0, "ntp.nict.jp", "pool.ntp.org");
+
+  Serial.print(F("Waiting for NTP time sync: "));
+  time_t nowSecs = time(nullptr);
+  while (nowSecs < 8 * 3600 * 2) {
+    delay(500);
+    Serial.print(F("."));
+    yield();
+    nowSecs = time(nullptr);
+  }
+
+  Serial.println();
+  struct tm timeinfo;
+  gmtime_r(&nowSecs, &timeinfo);
+  Serial.print(F("Current time: "));
+  Serial.print(asctime(&timeinfo));
+}
+
+
+void setup_wifi() {
+
+  WiFi.mode(WIFI_STA);
+  WiFiMulti.addAP(WIFI_SSID, WIFI_SECRET);
+
+  // wait for WiFi connection
+  Serial.print("Waiting for WiFi to connect...");
+  while ((WiFiMulti.run() != WL_CONNECTED)) {
+    Serial.print(".");
+  }
+  Serial.println(" connected");
+
+  setClock();
+}
+
+void setup() {
+  Serial.begin(115200);  // デバッグ用
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  setup_wifi();
+
+  co2_ppm = 400.0; // 暫定値を与える
+  pinMode(CO2_SENSOR, INPUT);  // デフォルトでINPUTだけど明示的に指定
+  ts_up = micros();  // 初期値を与える
+  attachInterrupt(digitalPinToInterrupt(CO2_SENSOR), edge_change, CHANGE);
+
+  // OLED 初期化
+  display.init();
+  display.flipScreenVertically();
+  send_ts = millis();
+}
+
+
+void loop() {
+  Serial.println(co2_ppm);  // デバッグ用
+
+  // OLED 表示
+  display.clear();
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(0, 0, "CO2:");
+  display.setTextAlignment(TEXT_ALIGN_RIGHT);
+  display.setFont(ArialMT_Plain_24);
+  display.drawString(90, 26, String(co2_ppm, 0));
+  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(95, 32, "[ ppm ]");
+  display.display();
+
+  delay(100);
+  long now_ts = millis();
+  if (now_ts - send_ts > 1 * 60 * 1000) {
+    Serial.println(send_ts);
+    Serial.println(now_ts);
+    send_ts += 1 * 60 * 1000;
+    digitalWrite(LED_BUILTIN, HIGH);
+    send_data(co2_ppm);
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+}
+
+
+void send_data(float co2) {
+  WiFiClientSecure *client = new WiFiClientSecure;
+  if (client) {
+    client -> setCACert(rootCACertificate);
+
+    {
+      // Add a scoping block for HTTPClient https to make sure it is destroyed before WiFiClientSecure *client is
+      HTTPClient https;
+
+      Serial.print("[HTTPS] begin...\n");
+      if (https.begin(*client, API_URL)) {  // HTTPS
+        https.setAuthorization(API_AUTH);
+        Serial.print("[HTTPS] POST...\n");
+        // start connection and send HTTP header
+        char data_buffer[128];  // スケッチ例 BasicHttpsClient を修正
+        sprintf(data_buffer, API_DATA_FORMAT, co2);  // スケッチ例 BasicHttpsClient を修正
+        int httpCode = https.POST(data_buffer);  // スケッチ例 BasicHttpsClient を修正
+
+        // httpCode will be negative on error
+        if (httpCode > 0) {
+          // HTTP header has been send and Server response header has been handled
+          Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
+
+          // file found at server
+          if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+            String payload = https.getString();
+            Serial.println(payload);
+          }
+        } else {
+          Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
+        }
+
+        https.end();
+      } else {
+        Serial.printf("[HTTPS] Unable to connect\n");
+      }
+
+      // End extra scoping block
+    }
+
+    delete client;
+  } else {
+    Serial.println("Unable to create client");
+  }
+}
+```
+
+- メニューの「スケッチ」→「マイコンボードに書き込む」を選択します
+
 #### 動作確認
 
-
+- OLED に現在の二酸化炭素濃度が表示されることを確認します
+- サーバーサイドで JSON データを受信できていることを確認します
+  - 例）{"esp32":{"co2":400.0}}
 
 ## 情報源
 
