@@ -1043,6 +1043,7 @@ void loop() {
 #define API_AUTH "your_api_basic_auth_base64_encoded"  // 要変更
 #define API_URL "your_api_url"  // 要変更
 #define API_DATA_FORMAT "{\"esp32\":{\"co2\":%f}}"  // POST data format
+#define DATA_BUFFER_SIZE 128
 
 
 // 要変更 HTTPS Web API 接続先サーバーのルート証明書
@@ -1205,7 +1206,7 @@ void send_data(float co2) {
         https.setAuthorization(API_AUTH);
         Serial.print("[HTTPS] POST...\n");
         // start connection and send HTTP header
-        char data_buffer[128];  // スケッチ例 BasicHttpsClient を修正
+        char data_buffer[DATA_BUFFER_SIZE];  // スケッチ例 BasicHttpsClient を修正
         sprintf(data_buffer, API_DATA_FORMAT, co2);  // スケッチ例 BasicHttpsClient を修正
         int httpCode = https.POST(data_buffer);  // スケッチ例 BasicHttpsClient を修正
 
